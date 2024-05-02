@@ -1,1 +1,9 @@
-const int orange = 0xFFFBC942;
+const int black = 0xFF000000;
+const int white = 0xFFFFFFFF;
+const int grey50 = 0xFF323232;
+const int grey90 = 0xFF5A5A5A;
+const int grey120 = 0xFF787878;
+const int grey180 = 0xFFB4B4B4;
+const int greenNeon = 0xFF2BF02B;
+const int pinkNeon = 0xFFF233F2;
+const int blueNeon = 0xFF33F2EE;

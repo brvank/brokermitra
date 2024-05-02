@@ -1,3 +1,4 @@
+import 'package:brokers_mitra_frontend/utils/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:brokers_mitra_frontend/data/repositories/session_manager.dart';
@@ -32,10 +33,10 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: "Brokers' Mitra",
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange),
+          colorScheme: ColorScheme.fromSeed(seedColor: const Color(black)),
           fontFamily: GoogleFonts.montserrat().fontFamily),
       home: loggedIn ? const HomeScreen() : const LoginScreen(),
     );

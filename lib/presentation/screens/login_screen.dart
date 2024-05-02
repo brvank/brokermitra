@@ -63,7 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
         centerTitle: true,
         title: Text(
           UITextConstants.appName,
-          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(orange)),
+          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(white)),
         ),
       ),
       body: Container(
