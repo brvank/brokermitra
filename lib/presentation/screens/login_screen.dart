@@ -1,16 +1,15 @@
-import 'dart:convert';
+import 'dart:math';
 
+import 'package:brokers_mitra_frontend/presentation/widgets/common.dart';
 import 'package:brokers_mitra_frontend/utils/constants/colors.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:brokers_mitra_frontend/utils/constants/ui_text_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:brokers_mitra_frontend/business_logic/blocs/loading_bloc.dart';
 import 'package:brokers_mitra_frontend/business_logic/blocs/message_bloc.dart';
 import 'package:brokers_mitra_frontend/business_logic/controller/login_controller.dart';
 import 'package:brokers_mitra_frontend/presentation/screens/home_screen.dart';
-import 'package:brokers_mitra_frontend/service/network/api_service.dart';
-import 'package:brokers_mitra_frontend/utils/constants/apis.dart';
-import 'package:brokers_mitra_frontend/utils/constants/ui_text_constants.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -26,6 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
   late TextEditingController _passwordController;
 
   bool _loginButtonEnable = false;
+  bool _loginState = true;
 
   @override
   void initState() {
@@ -56,23 +56,25 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
+  void swapLoginSignUp() {
+    setState(() {
+      _loginState = !_loginState;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text(
-          UITextConstants.appName,
-          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(white)),
+        appBar: AppBar(
+          backgroundColor: const Color(black),
+          centerTitle: true,
+          title: Text(
+            UITextConstants.appName,
+            style: const TextStyle(
+                fontSize: 24, fontWeight: FontWeight.bold, color: Color(white)),
+          ),
         ),
-      ),
-      body: Container(
-          decoration: const BoxDecoration(
-              image: DecorationImage(
-                  image: AssetImage("images/splash-m.jpg"),
-                  fit: BoxFit.fitHeight)),
-          child: loginForm()),
-    );
+        body: loginForm());
   }
 
   Widget loginForm() {
@@ -102,7 +104,7 @@ class _LoginScreenState extends State<LoginScreen> {
         },
         builder: (BuildContext context, state) {
           return BlocBuilder<LoaderBloc, bool>(
-            builder: (context, state) {
+            builder: (context, loading) {
               return Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
@@ -112,63 +114,25 @@ class _LoginScreenState extends State<LoginScreen> {
                     Container(
                       margin: const EdgeInsets.only(
                           left: 4, right: 4, top: 8, bottom: 8),
-                      child: TextField(
-                        autofocus: true,
-                        cursorColor: Colors.orangeAccent,
-                        controller: _userNameController,
-                        style: TextStyle(
-                            color: state ? Colors.grey : Colors.orangeAccent),
-                        decoration: const InputDecoration(
-                            labelText: "User Name",
-                            fillColor: Colors.white,
-                            filled: true,
-                            border: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    width: 1, color: Colors.orangeAccent)),
-                            disabledBorder: OutlineInputBorder(
-                                borderSide:
-                                    BorderSide(width: 1, color: Colors.grey)),
-                            enabledBorder: OutlineInputBorder(
-                                borderSide:
-                                    BorderSide(width: 1, color: Colors.grey)),
-                            focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    width: 1, color: Colors.orangeAccent))),
-                        enabled: state ? false : true,
-                      ),
+                      child: createTextInput(
+                          textEditingController: _userNameController,
+                          label: "User Name",
+                          primary: const Color(grey50),
+                          secondary: const Color(grey180),
+                          enabled: !loading),
                     ),
                     Container(
                       margin: const EdgeInsets.only(
                           left: 4, right: 4, top: 8, bottom: 8),
-                      child: TextField(
-                        autofocus: true,
-                        cursorColor: Colors.orangeAccent,
-                        obscureText: true,
-                        obscuringCharacter: '*',
-                        controller: _passwordController,
-                        style: TextStyle(
-                            color: state ? Colors.grey : Colors.orangeAccent),
-                        decoration: const InputDecoration(
-                            labelText: "Password",
-                            fillColor: Colors.white,
-                            filled: true,
-                            border: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    width: 1, color: Colors.orangeAccent)),
-                            disabledBorder: OutlineInputBorder(
-                                borderSide:
-                                    BorderSide(width: 1, color: Colors.grey)),
-                            enabledBorder: OutlineInputBorder(
-                                borderSide:
-                                    BorderSide(width: 1, color: Colors.grey)),
-                            focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    width: 1, color: Colors.orangeAccent))),
-                        enabled: state ? false : true,
-                      ),
+                      child: createTextInput(
+                          textEditingController: _passwordController,
+                          label: "Password",
+                          primary: const Color(grey50),
+                          secondary: const Color(grey180),
+                          enabled: !loading),
                     ),
                     MouseRegion(
-                      cursor: _loginButtonEnable && !state
+                      cursor: _loginButtonEnable && !loading
                           ? SystemMouseCursors.click
                           : SystemMouseCursors.forbidden,
                       child: GestureDetector(
@@ -182,16 +146,22 @@ class _LoginScreenState extends State<LoginScreen> {
                           decoration: BoxDecoration(
                               borderRadius:
                                   const BorderRadius.all(Radius.circular(4)),
-                              color: (_loginButtonEnable && !state)
-                                  ? Colors.orangeAccent
+                              color: (_loginButtonEnable && !loading)
+                                  ? const Color(grey50)
                                   : Colors.grey,
                               border: Border.all(
                                   width: 2,
-                                  color: (_loginButtonEnable && !state)
-                                      ? Colors.orangeAccent
-                                      : Colors.grey)),
+                                  color: (_loginButtonEnable && !loading)
+                                      ? const Color(grey50)
+                                      : const Color(grey180))),
                           child: Text(
-                            state ? "Logging you in..." : "Login",
+                            loading
+                                ? _loginState
+                                    ? "Logging you in..."
+                                    : "Signing you up..."
+                                : _loginState
+                                    ? "Login"
+                                    : "Sign Up",
                             style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold),
@@ -199,20 +169,48 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         onTap: () async {
                           if (_loginButtonEnable) {
-                            _loginController.login(
-                                _userNameController.value.text,
-                                _passwordController.value.text, () {
-                              if (context.mounted) {
-                                Navigator.pushAndRemoveUntil(context,
-                                    MaterialPageRoute(builder: (context) {
-                                  return const HomeScreen();
-                                }), ModalRoute.withName("/home"));
-                              }
-                            });
+                            if (_loginState) {
+                              _loginController.login(
+                                  _userNameController.value.text,
+                                  _passwordController.value.text, () {
+                                if (context.mounted) {
+                                  Navigator.pushAndRemoveUntil(context,
+                                      MaterialPageRoute(builder: (context) {
+                                    return const HomeScreen();
+                                  }), (_) => false);
+                                }
+                              });
+                            } else {
+                              _loginController.signup(
+                                  _userNameController.value.text,
+                                  _passwordController.value.text, () {
+                                if (context.mounted) {
+                                  Navigator.pushAndRemoveUntil(context,
+                                      MaterialPageRoute(builder: (context) {
+                                    return const HomeScreen();
+                                  }), (_) => false);
+                                }
+                              });
+                            }
                           }
                         },
                       ),
                     ),
+                    Container(
+                      margin: const EdgeInsets.only(
+                          left: 4, right: 4, top: 8, bottom: 8),
+                      child: TextButton(
+                        onPressed: () {
+                          swapLoginSignUp();
+                        },
+                        child: Text(
+                          _loginState
+                              ? "Didn't have an account? Sign up here."
+                              : "Already have an account? Login here.",
+                          style: const TextStyle(color: Color(pinkNeon)),
+                        ),
+                      ),
+                    )
                   ],
                 ),
               );

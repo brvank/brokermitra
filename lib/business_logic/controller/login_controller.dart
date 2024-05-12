@@ -21,5 +21,11 @@ class LoginController {
 
   void login(String userName, String password, Function callback) {
     loaderBloc.add(LoaderLoading());
+    Future.delayed(const Duration(seconds: 2)).then((value) => callback());
+  }
+
+  void signup(String userName, String password, Function callback){
+    loaderBloc.add(LoaderLoading());
+    Future.delayed(const Duration(seconds: 2)).then((value) => callback());
   }
 }
